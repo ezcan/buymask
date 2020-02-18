@@ -98,9 +98,9 @@ export default {
     align-items: center;
     padding: 4px 8px;
     flex-direction: column;
-    background-color: #fff;
+    background-color: #F4F4FC;
     box-shadow: 0 0 4px rgba(#777, .3);
-    border-radius: 4px;
+    border-radius: 8px;
     box-sizing: border-box;
     transition: all .5s;
     will-change: position opacity;
@@ -157,7 +157,7 @@ export default {
     min-width: 140px;
     height: 120px;
     color: #fff;
-    border-radius: 4px;
+    border-radius: 8px;
     overflow: hidden;
 
     > span{

@@ -32,6 +32,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: #A2DDD5
 }
 #app {
   position: relative;
@@ -44,7 +45,7 @@ body,
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-enter, .fade-leave-to {
   opacity: 0;
 }
 </style>

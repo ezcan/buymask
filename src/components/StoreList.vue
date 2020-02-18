@@ -174,7 +174,7 @@ export default {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #177E89;
+  background-color: #A2DDD5;
   color: #fff;
   font-size: 2em;
   z-index: 10;

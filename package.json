@@ -8,8 +8,15 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.12.1",
+    "axios": "^0.19.2",
     "core-js": "^3.4.4",
-    "vue": "^2.6.10"
+    "leaflet": "^1.6.0",
+    "vue": "^2.6.10",
+    "vue-router": "^3.1.5",
+    "vue2-leaflet": "^2.4.2",
+    "vue2-leaflet-markercluster": "^3.1.0",
+    "vuex": "^3.1.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.0",
@@ -21,6 +28,8 @@
     "eslint-plugin-vue": "^5.0.0",
     "lint-staged": "^9.5.0",
     "node-sass": "^4.12.0",
+    "pug": "^2.0.4",
+    "pug-plain-loader": "^1.0.0",
     "sass-loader": "^8.0.0",
     "vue-template-compiler": "^2.6.10"
   },
@@ -33,7 +42,25 @@
       "plugin:vue/essential",
       "@vue/airbnb"
     ],
-    "rules": {},
+    "rules": {
+      "comma-dangle": [
+        "error",
+        "never"
+      ],
+      "object-curly-newline": [
+        "error",
+        {
+          "ObjectExpression": "always",
+          "ObjectPattern": {
+            "multiline": true
+          },
+          "ImportDeclaration": "always",
+          "ExportDeclaration": {
+            "multiline": true
+          }
+        }
+      ]
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     }

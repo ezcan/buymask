@@ -1,28 +1,50 @@
-<template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+<template lang="pug">
+  #app
+    transition(name="fade" mode="out-in")
+      router-view
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import VMenu from './components/VMenu.vue';
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
-    HelloWorld,
+    VMenu
   },
+  data: () => ({
+    visiable: false
+  }),
+  mounted() {
+    this.$store.dispatch('fetchUserPosition');
+    this.$store.dispatch('fetchPharmacies');
+  }
 };
 </script>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
+
+html,
+body,
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+#app {
+  position: relative;
+  font-family: 'Noto Sans TC', 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

@@ -5,15 +5,15 @@
     .controller
       label
         input(type="radio" name="search-mode" value="nearby" v-model="searchMode")
-        .btn.fa.fa-map-marker-alt 鄰近店家
+        .btn.fa.fa-map-marker-alt 鄰近藥局
       label
         input(type="radio" name="search-mode" value="name" v-model="searchMode")
-        .btn.fa.fa-search 店名搜尋
+        .btn.fa.fa-search 藥局搜尋
         .item
           input(type="text" v-model="keyword" placeholder="依店名或地址查詢...")
       label
         input(type="radio" name="search-mode" value="area" v-model="searchMode")
-        .btn.fa.fa-city 行政區域
+        .btn.fa.fa-city 區域查詢
         .item
           select(v-model="city" @change="cityChangeHandler")
             option(value="") 選擇縣市
@@ -166,8 +166,10 @@ export default {
   position: sticky;
   top: 0;
   left: 0;
-  background-color: #fff;
-  width: 100%;
+  background-color: #fcffff;
+  max-width: 100%;
+  min-height: 1.5em;
+  line-height: 1.5em;
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -181,10 +183,12 @@ export default {
     align-items: center;
     margin: 0 2px;
     width: auto;
-    height: 1.5em;
+    height: 48px;
     border-radius: 4px;
-    box-shadow: 0 0 1px rgba(black, .3);
-    transition: width 10s;
+    box-shadow: 0 0 4px rgba(black, .3);
+    will-change: width;
+    transition: width .5s;
+    cursor: pointer;
   }
 }
 

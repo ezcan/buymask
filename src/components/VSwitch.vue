@@ -21,11 +21,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$size: 1.5em;
 .switch{
   position: relative;
   display: inline-block;
-  height: 1.2em;
+  height: $size;
   width: auto;
+  transform: translateY($size / 2);
 
   > input[type="checkbox"]{
     display: none;
@@ -36,7 +38,7 @@ export default {
         transform: rotate(180deg)
       }
       ~ .knobs{
-        transform: translateX(1.2em) rotate(-180deg);
+        transform: translateX($size) rotate(-180deg);
       }
     }
   }
@@ -46,8 +48,8 @@ export default {
     right: 0;
     bottom: 0;
     left: 0;
-    width: 2.4em;
-    height: 1.2em;
+    width: $size * 2;
+    height: $size;
     background-color: #ccc;
     box-shadow: 0 0 1px rgba(black, .3);
     transition: all .5s cubic-bezier(0.18, 0.89, 0.35, 1.15);
@@ -62,8 +64,8 @@ export default {
       right: 0;
       bottom: 0;
       left: 0;
-      width: 1.2em;
-      height: 1.2em;
+      width: $size;
+      height: $size;
       background-color: #fff;
       box-shadow: 0 0 1px rgba(black, .3);
       border-radius: 4px;

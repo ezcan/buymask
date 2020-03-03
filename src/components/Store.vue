@@ -11,7 +11,11 @@
         a(:href="`tel: ${store.phone}`") {{store.phone}}
       .info-item
         i.fa.fa-store-alt
-        span {{availableStatus}}
+        span
+          span.periods(v-for="a of availableStatus"
+            :key="a"
+            :class="availableClass(a)"
+          ) {{a}}
       .info-item(v-show="hasNote")
         i.fa.fa-notes-medical
         span {{store.note}}
@@ -36,12 +40,7 @@ const daysText = {
   5: '星期五',
   6: '星期六'
 };
-const periodsText = {
-  0: '',
-  1: '上午',
-  2: '下午',
-  3: '晚上'
-};
+
 
 export default {
   props: {
@@ -53,6 +52,13 @@ export default {
   }),
   components: {
     RunningNumber
+  },
+  methods: {
+    availableClass(period) {
+      return {
+        closed: period.includes('休息')
+      };
+    }
   },
   computed: {
     adultStatus() {
@@ -78,11 +84,10 @@ export default {
       const periods = available.split('、');
       const now = new Date();
       const day = daysText[now.getDay()];
-      const period = periodsText[Math.floor(now.getHours() / 6)];
-      return periods.find(p => p.includes(day + period))
-        .replace('看診', '營業')
-        .replace('休診', '休息')
-        || '無營業資訊';
+      return periods.filter(p => p.includes(day))
+        .map(i => i.replace(day, '')
+          .replace('看診', '營業')
+          .replace('休診', '休息'));
     },
     hasNote() {
       return this.store.note !== '-';
@@ -140,6 +145,13 @@ export default {
         flex: 11;
         display: inline-block;
       }
+    }
+  }
+  .periods{
+    margin-right: 4px;
+
+    &.closed{
+      color: #aaa;
     }
   }
   .mask-infos{

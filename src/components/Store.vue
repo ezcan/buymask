@@ -8,23 +8,24 @@
         span {{store.address}}
       .info-item
         i.fa.fa-phone-square
-        a(href="`tel: ${store.phone}`") {{store.phone}}
+        a(:href="`tel: ${store.phone}`") {{store.phone}}
       .info-item
         i.fa.fa-store-alt
         span {{availableStatus}}
-      .info-item
+      .info-item(v-show="hasNote")
         i.fa.fa-notes-medical
-        span {{noteText}}
+        span {{store.note}}
     .mask-infos
       .mask-num(:class="adultStatus" :data-num="store.mask_adult")
         h4 成人口罩數量
-        span {{store.mask_adult}}
+        running-number(:target="store.mask_adult")
       .mask-num(:class="childStatus" :data-num="store.mask_child")
         h4 幼童口罩數量
-        span {{store.mask_child}}
+        running-number(:target="store.mask_child")
 </template>
 
 <script>
+import RunningNumber from './RunningNumber.vue';
 
 const daysText = {
   0: '星期日',
@@ -50,6 +51,9 @@ export default {
   data: () => ({
     colors: ['grey', 'pink', 'orange', 'blue']
   }),
+  components: {
+    RunningNumber
+  },
   computed: {
     adultStatus() {
       const num = Math.min(
@@ -80,9 +84,8 @@ export default {
         .replace('休診', '休息')
         || '無營業資訊';
     },
-    noteText() {
-      const { note } = this.store;
-      return note === '-' ? '無藥局備註' : note;
+    hasNote() {
+      return this.store.note !== '-';
     }
   },
   name: 'Store'
@@ -159,11 +162,6 @@ export default {
     color: #fff;
     border-radius: 8px;
     overflow: hidden;
-
-    > span{
-      font-size: 3em;
-      font-weight: bold;
-    }
 
     &::after{
       content: attr(data-num);

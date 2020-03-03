@@ -2,21 +2,29 @@
   .container
     header.header
       h1 口罩查詢器
-    span {{resultTips}}
-    v-menu(@click="isShowController = !isShowController")
-    transition(name="zoom")
-      .controller(v-show="isShowController")
-        .container
-          .filter-item
+      .controller
+        label
+          input(type="radio" name="search-mode" value="nearby" v-model="searchMode")
+          .btn.fa.fa-map-marker-alt 鄰近店家
+        label
+          input(type="radio" name="search-mode" value="name" v-model="searchMode")
+          .btn.fa.fa-search 店名搜尋
+          .item
+            input(type="text" v-model="keyword" placeholder="依店名或地址查詢...")
+        label
+          input(type="radio" name="search-mode" value="area" v-model="searchMode")
+          .btn.fa.fa-city 行政區域
+          .item
             select(v-model="city")
               option(value="") 選擇縣市
               option(v-for="(city, i) in cityOptions" :key="city" ) {{city}}
             select(v-model="district")
               option(value="" disabled) 選擇行政區
               option(v-for="(d, j) in districtsOptions" :key="d" ) {{d}}
-          .filter-item
-            input.fa.fa-search-location(type="text" v-model="keyword" placeholder="依店名或地址查詢...")
-          button(@click="resetHandler") 清空
+        span 有成人口罩
+        v-switch(v-model="isHidden")
+      span {{resultTips}}
+
     transition-group.store-list(name="list")
       store(v-for="store in visiableStores"
         :key="store.properties.id"
@@ -25,40 +33,42 @@
 </template>
 
 <script>
+import Util from '@/resources/Util';
+import setting from '@/resources/map-setting';
+import twArea from '@/resources/tw-area';
 import Store from './Store.vue';
 import VMenu from './VMenu.vue';
-import setting from '../resources/map-setting';
-import twArea from '../resources/tw-area';
+import VSwitch from './VSwitch.vue';
+
 
 export default {
   name: 'StroeList',
   components: {
     Store,
-    VMenu
+    VMenu,
+    VSwitch
   },
   data: () => ({
     searchMode: 'nearby', // area, name, nearby
-    city: '',
-    district: '',
+    city: '新北市',
+    district: '中和區',
     keyword: '',
-    radius: 3,
+    radius: 1.5,
     page: 1,
     numberOfPage: 12,
     isShowController: false,
+    isHidden: true,
     twArea
   }),
   watch: {
     city() {
-      if (!this.city) {
-        this.searchMode = 'nearby';
-        return;
-      }
-      this.searchMode = 'area';
       const [district] = this.districtsOptions;
       this.district = district;
     },
-    keyword() {
-      this.searchMode = this.keyword ? 'name' : 'nearby';
+    storeCounter() {
+      if (this.storeCounter === 0 && this.searchMode === 'nearby') {
+        this.radius += 0.5;
+      }
     }
   },
   mounted() {
@@ -86,11 +96,11 @@ export default {
     distanceStores() {
       return this.stores.map(s => ({
         ...s,
-        nearby: this.calcDistance(this.userPosition, s.geometry.coordinates)
+        nearby: Util.calcDistance(this.userPosition, s.geometry.coordinates)
       }));
     },
     nameFilter() {
-      return this.keyword && this.distanceStores.filter(
+      return this.distanceStores.filter(
         s => s.properties.name.includes(this.keyword)
         || s.properties.address.includes(this.keyword)
       );
@@ -107,26 +117,28 @@ export default {
       );
     },
     storeFilter() {
-      return {
+      const result = {
         name: this.nameFilter,
         area: this.areaFilter,
         nearby: this.nearbyFilter
       };
+      return result[this.searchMode];
     },
-    dataLength() {
-      return this.storeFilter[this.searchMode].length;
+    storeCounter() {
+      return this.storeFilter.length;
     },
     visiableStores() {
-      const result = this.storeFilter[this.searchMode] || [];
+      const result = this.storeFilter
+        .filter(item => !this.isHidden || item.properties.mask_adult > 0);
       return result.sort((a, b) => a.nearby - b.nearby).slice(0, this.page * this.numberOfPage);
     },
     resultTips() {
       const tips = {
         name: `根據關鍵字 ${this.keyword}`,
-        area: `在 ${this.city}${this.district}`,
+        area: `在 ${this.city}${this.district}內`,
         nearby: `距離您 ${this.radius} 公里內`
       };
-      return `${tips[this.searchMode]}，共找到${this.dataLength}筆資料`;
+      return `${tips[this.searchMode]}，共找到${this.storeCounter}筆藥局資訊`;
     }
   },
   methods: {
@@ -136,32 +148,14 @@ export default {
       ) {
         this.page += 1;
       }
-    },
-    calcDistance(origin, destination) {
-      const [lat1, lng1] = origin;
-      const [lng2, lat2] = destination;
-      const EARTH_RADIUS = 6378.137;
-      const radLat1 = lat1 * Math.PI / 180.0;
-      const radLat2 = lat2 * Math.PI / 180.0;
-      const deltaLat = radLat1 - radLat2;
-      const deltaLng = lng1 * Math.PI / 180.0 - lng2 * Math.PI / 180.0;
-      const result = 2 * EARTH_RADIUS * Math.asin(Math.sqrt(
-        (Math.sin(deltaLat / 2) ** 2)
-      + Math.cos(radLat1) * Math.cos(radLat2) * (Math.sin(deltaLng / 2) ** 2)
-      ));
-      return Math.round(result * 10000) / 10000;
-    },
-    resetHandler() {
-      this.keyword = '';
-      this.searchMode = 'nearby';
     }
   }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .header{
-  height: 60px;
+  height: 120px;
 }
 .container{
   max-width: 1200px;
@@ -169,17 +163,61 @@ export default {
 }
 
 .controller{
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #A2DDD5;
-  color: #fff;
-  font-size: 2em;
-  z-index: 10;
-  transition: all 1s
+  background-color: #fff;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+
+  > label {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 2px;
+    width: auto;
+    height: 1.5em;
+    border-radius: 4px;
+    box-shadow: 0 0 1px rgba(black, .3);
+    transition: width 10s;
+  }
 }
+
+input[type="radio"]{
+  display: none;
+
+  &:checked{
+    ~ .item{
+      width: auto;
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+      transition: 1s
+    }
+  }
+}
+
+.btn{
+  min-width: 80px;
+  padding: 2px 4px;
+  transition: all .5s;
+  box-sizing: border-box;
+}
+.item{
+  width: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: all .4s .1s;
+  transform: translateX(30px);
+  > input{
+    height: 100%;
+    border: 0;
+    outline: 0;
+  }
+}
+
 .store-list{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

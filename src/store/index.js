@@ -6,7 +6,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    stores: [23.8759391, 120.588669],
+    stores: [],
     userPosition: null
   },
   mutations: {

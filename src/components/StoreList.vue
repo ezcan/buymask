@@ -2,28 +2,28 @@
   .container
     header.header
       h1 口罩查詢器
-      .controller
-        label
-          input(type="radio" name="search-mode" value="nearby" v-model="searchMode")
-          .btn.fa.fa-map-marker-alt 鄰近店家
-        label
-          input(type="radio" name="search-mode" value="name" v-model="searchMode")
-          .btn.fa.fa-search 店名搜尋
-          .item
-            input(type="text" v-model="keyword" placeholder="依店名或地址查詢...")
-        label
-          input(type="radio" name="search-mode" value="area" v-model="searchMode")
-          .btn.fa.fa-city 行政區域
-          .item
-            select(v-model="city")
-              option(value="") 選擇縣市
-              option(v-for="(city, i) in cityOptions" :key="city" ) {{city}}
-            select(v-model="district")
-              option(value="" disabled) 選擇行政區
-              option(v-for="(d, j) in districtsOptions" :key="d" ) {{d}}
-        span 有成人口罩
-        v-switch(v-model="isHidden")
-      span {{resultTips}}
+    .controller
+      label
+        input(type="radio" name="search-mode" value="nearby" v-model="searchMode")
+        .btn.fa.fa-map-marker-alt 鄰近店家
+      label
+        input(type="radio" name="search-mode" value="name" v-model="searchMode")
+        .btn.fa.fa-search 店名搜尋
+        .item
+          input(type="text" v-model="keyword" placeholder="依店名或地址查詢...")
+      label
+        input(type="radio" name="search-mode" value="area" v-model="searchMode")
+        .btn.fa.fa-city 行政區域
+        .item
+          select(v-model="city" @change="cityChangeHandler")
+            option(value="") 選擇縣市
+            option(v-for="(city, i) in cityOptions" :key="city" ) {{city}}
+          select(v-model="district")
+            option(value="" disabled) 選擇行政區
+            option(v-for="(d, j) in districtsOptions" :key="d" ) {{d}}
+      span 有成人口罩
+      v-switch(v-model="isHidden")
+    span {{resultTips}}
 
     transition-group.store-list(name="list")
       store(v-for="store in visiableStores"
@@ -61,10 +61,6 @@ export default {
     twArea
   }),
   watch: {
-    city() {
-      const [district] = this.districtsOptions;
-      this.district = district;
-    },
     storeCounter() {
       if (this.storeCounter === 0 && this.searchMode === 'nearby') {
         this.radius += 0.5;
@@ -148,6 +144,10 @@ export default {
       ) {
         this.page += 1;
       }
+    },
+    cityChangeHandler() {
+      const [district] = this.districtsOptions;
+      this.district = district;
     }
   }
 };
@@ -155,7 +155,7 @@ export default {
 
 <style lang="scss" scoped>
 .header{
-  height: 120px;
+  height: 60px;
 }
 .container{
   max-width: 1200px;
@@ -165,11 +165,14 @@ export default {
 .controller{
   position: sticky;
   top: 0;
+  left: 0;
   background-color: #fff;
   width: 100%;
   display: flex;
   align-items: center;
   flex-direction: row;
+  flex-wrap: wrap;
+  z-index: 1000;
 
   > label {
     position: relative;

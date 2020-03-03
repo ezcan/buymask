@@ -1,5 +1,5 @@
 <template lang="pug">
-  .runing-number {{visiableNumber}}
+  span.runing-number {{visiableNumber}}
 </template>
 
 <script>
@@ -9,18 +9,17 @@ export default {
     visiableNumber: 0
   }),
   props: {
-    target: Number,
-    default: () => 0
-  },
-  watch: {
-    target() {
-      this.visiableNumber = 0;
-      this.run();
+    target: {
+      type: Number,
+      default: () => 0
     }
+  },
+  mounted() {
+    this.run();
   },
   methods: {
     run() {
-      const diff = Math.round((this.target - this.visiableNumber) * 0.05);
+      const diff = Math.round((this.target - this.visiableNumber) * 0.1);
       if (diff === 0) {
         this.visiableNumber = this.target;
       } else {
@@ -31,3 +30,10 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+span.runing-number{
+  font-size: 2em;
+  font-weight: bold;
+}
+</style>

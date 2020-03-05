@@ -35,7 +35,11 @@ $size: 1.5em;
     &:checked{
       + .slider{
         background-color: #88e1f2;
-        transform: rotate(180deg)
+        transform: rotate(180deg);
+        &::after{
+          content: 'on';
+          transform: rotate(-180deg);
+        }
       }
       ~ .knobs{
         transform: translateX($size) rotate(-180deg);
@@ -55,6 +59,16 @@ $size: 1.5em;
     transition: all .5s cubic-bezier(0.18, 0.89, 0.35, 1.15);
     border-radius: 4px;
     transform: rotate(0);
+
+
+    &::after{
+      content: 'off';
+      position: absolute;
+      right: .1em;
+      transform: rotate(0);
+      font-size: .5em;
+      color: #fff;
+    }
   }
 
   .knobs{

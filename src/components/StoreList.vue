@@ -1,29 +1,34 @@
 <template lang="pug">
   .container
-    header.header
-      h1 口罩查詢器
-    .controller
-      label
-        input(type="radio" name="search-mode" value="nearby" v-model="searchMode")
-        .btn.fa.fa-map-marker-alt 鄰近藥局
-      label
-        input(type="radio" name="search-mode" value="name" v-model="searchMode")
-        .btn.fa.fa-search 藥局搜尋
-        .item
-          input(type="text" v-model="keyword" placeholder="依店名或地址查詢...")
-      label
+    input#menu(type="checkbox")
+    label.barger(for="menu")
+    aside.controller
+      .calendar-container
+        .calendar
+          .month {{visiableMonth}}
+          .date {{visiableDate}}
+        span.tips(v-html="buyerTips")
+      p {{resultTips}}
+      label.controller-item
         input(type="radio" name="search-mode" value="area" v-model="searchMode")
-        .btn.fa.fa-city 區域查詢
+        .text.fa.fa-city 區域查詢
         .item
           select(v-model="city" @change="cityChangeHandler")
-            option(value="") 選擇縣市
+            option(value="" disabled) 選擇縣市
             option(v-for="(city, i) in cityOptions" :key="city" ) {{city}}
           select(v-model="district")
             option(value="" disabled) 選擇行政區
             option(v-for="(d, j) in districtsOptions" :key="d" ) {{d}}
-      span 有成人口罩
+      label.controller-item
+        input(type="radio" name="search-mode" value="name" v-model="searchMode")
+        .text.fa.fa-search 藥局搜尋
+        .item
+          input(type="text" v-model="keyword" placeholder="依店名或地址查詢...")
+      label.controller-item
+        input(type="radio" name="search-mode" value="nearby" v-model="searchMode")
+        .btn.fa.fa-map-marker-alt 鄰近藥局
+      span 成人口罩
       v-switch(v-model="isHidden")
-    span {{resultTips}}
 
     transition-group.store-list(name="list")
       store(v-for="store in visiableStores"
@@ -49,9 +54,10 @@ export default {
     VSwitch
   },
   data: () => ({
+    currentTime: new Date(),
     searchMode: 'nearby', // area, name, nearby
-    city: '新北市',
-    district: '中和區',
+    city: '',
+    district: '',
     keyword: '',
     radius: 1.5,
     page: 1,
@@ -74,6 +80,24 @@ export default {
     window.removeEventListener('scroll');
   },
   computed: {
+    visiableMonth() {
+      return `${this.currentTime.getMonth() + 1}月`;
+    },
+    visiableDate() {
+      return this.currentTime.getDate();
+    },
+    buyerTips() {
+      const today = this.currentTime.getDay();
+
+      if (today === 0) {
+        return '<span style="color: #ff7c7c">不限身分證字號</span>，只要健保特約藥局有營業即可購買。';
+      }
+      const tips = {
+        0: '偶數',
+        1: '奇數'
+      };
+      return `身分證字號最末碼為<span style="color: #ff7c7c">${tips[today % 2]}者</span>，可至健保特約藥局購買。`;
+    },
     cityOptions() {
       return Object.keys(this.twArea);
     },
@@ -154,41 +178,115 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.header{
-  height: 60px;
+
+$sidebar-width: 240px;
+$store-width: 300px;
+
+.container{
+  width: 100vw;
+  max-width: 1200px;
+  margin: 0 auto;
 }
+#menu{
+  display: none;
+  &:checked{
+    & ~ .controller{
+      transform: translateX(-$sidebar-width);
+    }
+    & ~ .store-list{
+      margin-left: 0;
+      grid-gap: 20px;
+    }
+  }
+}
+
+.barger{
+  display: inline-block;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  width: 48px;
+  height: 48px;
+  z-index: 100;
+}
+
 .container{
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.controller{
-  position: sticky;
-  top: 0;
-  left: 0;
-  background-color: #fcffff;
-  max-width: 100%;
-  min-height: 1.5em;
-  line-height: 1.5em;
+.calendar-container{
+  display: inline-block;
   display: flex;
-  align-items: center;
-  flex-direction: row;
-  flex-wrap: wrap;
-  z-index: 1000;
+  font-display: row;
+  width: 100%;
+  box-sizing: border-box;
+}
+.calendar{
+  display: inline-block;
+  widows: 60px;
+  min-width: 60px;
+  height: 60px;
+  box-shadow: 0 0 4px rgba(black, .3);
+  box-sizing: border-box;
+  transform: rotate(-4.5deg) translateX(4px);
+  > .month, .date{
+    text-align: center;
+  }
+  > .month{
+    width: 100%;
+    height: 20px;
+    color: #ffffff;
+    background-color: #ff7c7c;
+    line-height: 20px;
+  }
+  > .date{
+    line-height: 40px;
+    font-size: 2em;
+  }
+}
 
-  > label {
+.tips{
+  display: inline-block;
+  padding: 1em;
+  max-width: 180px;
+  font-size: .5em;
+  box-sizing: border-box;
+}
+
+.controller{
+  padding: 60px 4px;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  height: 100vh;
+  width: $sidebar-width;
+  display: flex;
+  transition: all .5s;
+  box-sizing: border-box;
+
+  > .controller-item {
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 2px;
-    width: auto;
+    margin: 4 8px;
+    width: 100%;
     height: 48px;
     border-radius: 4px;
     box-shadow: 0 0 4px rgba(black, .3);
     will-change: width;
     transition: width .5s;
     cursor: pointer;
+
+    > .text, .item{
+      position: absolute;
+    }
+    > .text{
+      transform: scale(1);
+      opacity: 1;
+      transition: all .5s;
+    }
   }
 }
 
@@ -196,12 +294,17 @@ input[type="radio"]{
   display: none;
 
   &:checked{
+    ~ .text{
+      transform: scale(.7);
+      opacity: 0;
+    }
     ~ .item{
-      width: auto;
+      padding: 0 8px;
+      width: 80%;
       opacity: 1;
       visibility: visible;
-      transform: translateX(0);
-      transition: 1s
+      transform: translateX(0) scale(1);
+      transition: .5s;
     }
   }
 }
@@ -216,19 +319,25 @@ input[type="radio"]{
   width: 0;
   visibility: hidden;
   opacity: 0;
-  transition: all .4s .1s;
-  transform: translateX(30px);
+  transform: translateX(30px) scale(0);
+
   > input{
     height: 100%;
     border: 0;
     outline: 0;
   }
+  > select{
+    width: 50%;
+  }
 }
 
 .store-list{
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax($store-width, 1fr));
+  grid-gap: 12px;
+  padding: 8px;
+  margin-left: $sidebar-width;
+  transition: all .5s;
 }
 
 .list-enter, .list-leave-to{

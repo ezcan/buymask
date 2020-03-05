@@ -33,7 +33,9 @@ export default {
 
 <style lang="scss">
 span.runing-number{
+  display: inline-block;
   font-size: 2em;
   font-weight: bold;
+  margin: 0 .1em;
 }
 </style>

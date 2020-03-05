@@ -1,8 +1,8 @@
 <template lang="pug">
   .store-item
+    h3.store-title(:data-distance="distance") {{store.name}}
+    span.distance-label {{distance}}
     .store-infos
-      h3 {{store.name}}
-      span.distance-label {{distance}}
       .info-item
         i.fa.fa-map-marker-alt
         span {{store.address}}
@@ -21,11 +21,13 @@
         span {{store.note}}
     .mask-infos
       .mask-num(:class="adultStatus" :data-num="store.mask_adult")
-        h4 成人口罩數量
-        running-number(:target="store.mask_adult")
+        span 成人
+          running-number(:target="store.mask_adult")
+          | 片
       .mask-num(:class="childStatus" :data-num="store.mask_child")
-        h4 幼童口罩數量
-        running-number(:target="store.mask_child")
+        span 幼童
+          running-number(:target="store.mask_child")
+          | 片
 </template>
 
 <script>
@@ -48,7 +50,7 @@ export default {
     nearby: Number
   },
   data: () => ({
-    colors: ['grey', 'pink', 'orange', 'blue']
+    colors: ['zero', 'less', 'general', 'enough']
   }),
   components: {
     RunningNumber
@@ -63,14 +65,14 @@ export default {
   computed: {
     adultStatus() {
       const num = Math.min(
-        Math.ceil(this.store.mask_adult / 50),
+        Math.ceil(this.store.mask_adult / 100),
         this.colors.length - 1
       );
       return this.colors[num];
     },
     childStatus() {
       const num = Math.min(
-        Math.ceil(this.store.mask_child / 15),
+        Math.ceil(this.store.mask_child / 100),
         this.colors.length - 1
       );
       return this.colors[num];
@@ -100,36 +102,47 @@ export default {
 <style lang="scss">
   .store-item {
     position: relative;
-    display: inline-block;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 8px;
+    padding: 4px 12px 12px;
     flex-direction: column;
-    background-color: #F4F4FC;
-    box-shadow: 0 0 4px rgba(#777, .3);
-    border-radius: 8px;
+    background-color: #fcfcfc;
+    box-shadow: 0 0 4px rgba(#777777, .3);
+    border-radius: 16px;
     box-sizing: border-box;
     transition: all .5s;
+    overflow: hidden;
     will-change: position opacity;
+  }
+  h3.store-title{
+    text-align: left;
+    font-size: 1.5em;
+    margin: .5em 0;
+  }
+  .distance-label{
+      position: absolute;
+      right: -40px;
+      top: 10px;
+      min-width: 160px;
+      height: 1.5em;
+      border-radius: 8px;
+      line-height: 1.5em;
+      background-color: #00635D;
+      color: #ffffff;
+      text-align: center;
+      transform: rotate(30deg);
+      box-shadow: 0 0 4px rgba(#777777, .3)
   }
   .store-infos{
     position: relative;
     width: 100%;
     display: flex;
     flex-direction: column;
-    > .distance-label{
-      position: absolute;
-      right: 0;
-      top: 1.13em;
-      min-width: 72px;
-      height: 1.5em;
-      border-radius: 1.5em;
-      line-height: 1.5em;
-      background-color: #777;
-      color: #fff;
-      text-align: center;
-    }
+    color: #777777;
+    font-size: .8em;
+    padding-bottom: 8px;
+
     > .info-item{
       line-height: 1.5em;
       display: flex;
@@ -145,63 +158,56 @@ export default {
         flex: 11;
         display: inline-block;
       }
+      > a {
+        text-decoration: none;
+        color: #00635D
+      }
     }
   }
   .periods{
     margin-right: 4px;
-
+    color: #00635D;
     &.closed{
-      color: #aaa;
+      color: #cccccc;
     }
   }
   .mask-infos{
     display: flex;
     flex-direction: row;
     width: 100%;
+    height: 2.5em;
+    line-height: 2.5em;
     display: flex;
     justify-content: center;
-    align-items: space-between;
+    align-items: center;
+    flex-direction: row;
+    box-shadow: 0 0 8px rgba(#777777, .3);
+    border-radius: 8px;
+    margin: 0 4px;
   }
   .mask-num{
     position: relative;
     display: flex;
+    box-sizing: border-box;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    width: 50%;
-    min-width: 140px;
-    height: 120px;
+    min-width: 120px;
+    height: 1.8em;
+    line-height: 1.8em;
     color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-
-    &::after{
-      content: attr(data-num);
-      position: absolute;
-      display: block;
-      width: 120px;
-      height: 80px;
-      border-radius: 120px;
-      background-color: #fff;
-      bottom: 0;
-      right: 0;
-      z-index: -1;
-    }
-    &:nth-child(2){
-      margin-left: 4px;
-    }
   }
 
-  .grey{
-    background-color: #777;
+  .zero{
+    color: #777777;
   }
-  .blue{
-    background-color: #88e1f2;
+  .enough{
+    color: #08a4bd;
   }
-  .orange{
-    background-color: #ffd082;
+  .general{
+    color: #ffd082;
   }
-  .pink{
-    background-color: #ff7c7c;
+  .less{
+    color: #ff7c7c;
   }
 </style>

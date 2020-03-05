@@ -48,7 +48,7 @@ input[type='checkbox']{
 }
 
 .burger{
-position: relative;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -62,6 +62,7 @@ position: relative;
 }
 
 .burger-bar{
+  display: inline-block;
   width: 28px;
   height: 4px;
   background-color: #333;

@@ -34,7 +34,7 @@ $size: 1.5em;
 
     &:checked{
       + .slider{
-        background-color: #88e1f2;
+        background-color: #00635D;
         transform: rotate(180deg);
         &::after{
           content: 'on';
@@ -54,9 +54,9 @@ $size: 1.5em;
     left: 0;
     width: $size * 2;
     height: $size;
-    background-color: #ccc;
-    box-shadow: 0 0 1px rgba(black, .3);
-    transition: all .5s cubic-bezier(0.18, 0.89, 0.35, 1.15);
+    background-color: #777777;
+    box-shadow: 0 0 4px rgba(black, .3);
+    transition: all .5s;
     border-radius: 4px;
     transform: rotate(0);
 

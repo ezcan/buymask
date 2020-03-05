@@ -1,7 +1,8 @@
 <template lang="pug">
   .container
-    input#menu(type="checkbox")
-    label.barger(for="menu")
+    input#burger-toggle(type="checkbox")
+    label.burger(for="burger-toggle")
+     span.burger-bar
     aside.controller
       .calendar-container
         .calendar
@@ -158,7 +159,8 @@ export default {
         area: `在 ${this.city}${this.district}內`,
         nearby: `距離您 ${this.radius} 公里內`
       };
-      return `${tips[this.searchMode]}，共找到${this.storeCounter}筆藥局資訊`;
+      return `${tips[this.searchMode]}，
+        共找到${this.storeCounter.toLocaleString()}筆藥局資訊。`;
     }
   },
   methods: {
@@ -182,13 +184,35 @@ export default {
 $sidebar-width: 240px;
 $store-width: 300px;
 
-.container{
-  width: 100vw;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-#menu{
+#burger-toggle{
   display: none;
+  &:checked {
+    + label > .burger-bar{
+      background: transparent;
+      box-shadow: none;
+      transform: translateX(25px);
+      &::before, &::after{
+        box-shadow: 0 2px 2px rgba(#777, 0.3);
+      }
+      &::before{
+        transform: rotate(45deg) translate(-18px, 18px);
+      }
+      &::after{
+        transform: rotate(-45deg) translate(-18px, -18px);
+      }
+    }
+    & ~ .controller{
+      transform: translateX(-$sidebar-width);
+    }
+    & ~ .store-list{
+      margin-left: 0;
+      grid-gap: 20px;
+    }
+  }
+
+}
+
+#burger-toggle{
   &:checked{
     & ~ .controller{
       transform: translateX(-$sidebar-width);
@@ -200,17 +224,51 @@ $store-width: 300px;
   }
 }
 
-.barger{
-  display: inline-block;
+.burger{
   position: fixed;
-  top: 12px;
-  left: 12px;
-  width: 48px;
-  height: 48px;
-  z-index: 100;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: all 1s ease-in-out;
+  border-radius: 100%;
+  box-shadow: 0 0 4px rgba(black, .3);
+  z-index: 3000;
+}
+
+.burger-bar{
+  width: 28px;
+  height: 4px;
+  background-color: #333;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px rgba(#ddd, 0.3);
+  transition: all 0.5s ease-in-out;
+
+  &::after,
+  &::before{
+    content: '';
+    position: absolute;
+    width: 28px;
+    height: 4px;
+    background-color: #333;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px rgba(#ddd, 0.3);
+    transition: all 0.5s ease-in-out;
+  }
+  &::before{
+    transform: translateY(-8px);
+  }
+  &::after{
+    transform: translateY(8px);
+  }
 }
 
 .container{
+  width: 100vw;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -222,6 +280,7 @@ $store-width: 300px;
   width: 100%;
   box-sizing: border-box;
 }
+
 .calendar{
   display: inline-block;
   widows: 60px;
@@ -264,13 +323,15 @@ $store-width: 300px;
   display: flex;
   transition: all .5s;
   box-sizing: border-box;
-
+  > p{
+    font-size: .5em;
+  }
   > .controller-item {
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 4 8px;
+    margin: 4px 0;
     width: 100%;
     height: 48px;
     border-radius: 4px;
